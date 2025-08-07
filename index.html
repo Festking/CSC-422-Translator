@@ -24,6 +24,8 @@
     #output {
       background: #e6e6e6;
       min-height: 100px;
+      padding: 10px;
+      white-space: pre-wrap;
     }
   </style>
 </head>
@@ -36,7 +38,7 @@
     <option value="fr">French</option>
     <option value="es">Spanish</option>
     <option value="de">German</option>
-    <option value="ig">Igbo</option>
+    <!-- <option value="ig">Igbo</option> -->
   </select>
 
   <select id="targetLang">
@@ -44,7 +46,7 @@
     <option value="en">English</option>
     <option value="es">Spanish</option>
     <option value="de">German</option>
-    <option value="ig">Igbo</option>
+    <!-- <option value="ig">Igbo</option> -->
   </select>
 
   <textarea id="inputText" rows="5" placeholder="Enter text to translate..."></textarea>
@@ -60,26 +62,31 @@
       const source = document.getElementById('sourceLang').value;
       const target = document.getElementById('targetLang').value;
 
-      if (source === target) {
-        document.getElementById('output').innerText = text;
-        return;
-      }
+      const url = 'https://google-translate1.p.rapidapi.com/language/translate/v2';
+      const data = new URLSearchParams();
+      data.append("q", text);
+      data.append("source", source);
+      data.append("target", target);
+      data.append("format", "text");
 
-      const res = await fetch('https://libretranslate.de/translate', {
+      const options = {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'content-type': 'application/x-www-form-urlencoded',
+          'X-RapidAPI-Key': 'c04ad26f7bmsh989f7bbaea7e6d2p1a54b9jsnb02290a4e8e5',
+          'X-RapidAPI-Host': 'google-translate1.p.rapidapi.com'
         },
-        body: JSON.stringify({
-          q: text,
-          source: source,
-          target: target,
-          format: "text"
-        })
-      });
+        body: data
+      };
 
-      const data = await res.json();
-      document.getElementById('output').innerText = data.translatedText;
+      try {
+        const res = await fetch(url, options);
+        const json = await res.json();
+        document.getElementById('output').innerText = json.data.translations[0].translatedText;
+      } catch (error) {
+        console.error(error);
+        document.getElementById('output').innerText = "Translation failed.";
+      }
     }
   </script>
 
