@@ -38,7 +38,7 @@
     <option value="fr">French</option>
     <option value="es">Spanish</option>
     <option value="de">German</option>
-    <!-- <option value="ig">Igbo</option> -->
+    <option value="ig">Igbo</option>
   </select>
 
   <select id="targetLang">
@@ -46,7 +46,7 @@
     <option value="en">English</option>
     <option value="es">Spanish</option>
     <option value="de">German</option>
-    <!-- <option value="ig">Igbo</option> -->
+    <option value="ig">Igbo</option>
   </select>
 
   <textarea id="inputText" rows="5" placeholder="Enter text to translate..."></textarea>
@@ -61,34 +61,21 @@
       const text = document.getElementById('inputText').value;
       const source = document.getElementById('sourceLang').value;
       const target = document.getElementById('targetLang').value;
-
-      const url = 'https://google-translate1.p.rapidapi.com/language/translate/v2';
-      const data = new URLSearchParams();
-      data.append("q", text);
-      data.append("source", source);
-      data.append("target", target);
-      data.append("format", "text");
-
-      const options = {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/x-www-form-urlencoded',
-          'X-RapidAPI-Key': 'c04ad26f7bmsh989f7bbaea7e6d2p1a54b9jsnb02290a4e8e5',
-          'X-RapidAPI-Host': 'google-translate1.p.rapidapi.com'
-        },
-        body: data
-      };
-
+  
+      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${source}|${target}`;
+  
       try {
-        const res = await fetch(url, options);
+        const res = await fetch(url);
         const json = await res.json();
-        document.getElementById('output').innerText = json.data.translations[0].translatedText;
+        const translated = json.responseData.translatedText;
+        document.getElementById('output').innerText = translated;
       } catch (error) {
-        console.error(error);
+        console.error("Translation error:", error);
         document.getElementById('output').innerText = "Translation failed.";
       }
     }
   </script>
+  
 
 </body>
 </html>
